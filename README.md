@@ -123,27 +123,7 @@ Bare-metal programming concepts
 
 CONTRIBUTING
 
-Contributions are welcome. Enhancements may include:
-
-Second-stage bootloader
-
-Protected mode transition
-
-Kernel loading
-
-Disk read support
-
-Improved documentation
-
-Steps to contribute:
-
-Fork the repository
-
-Create a feature branch
-
-Commit your changes
-
-Open a pull request
+Contributions are welcome.
 
 LICENSE
 
