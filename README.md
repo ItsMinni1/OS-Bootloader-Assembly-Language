@@ -1,27 +1,27 @@
-# 🚀 3-Stage x86_64 Bootloader
+# 3-Stage x86_64 Bootloader
 
 This project is a minimalist, multi-stage bootloader written in x86 Assembly (NASM). It demonstrates the foundational steps required to boot an x86 processor from a cold reset up to 64-bit Long Mode, transitioning through Real Mode and Protected Mode along the way.
 
 ---
 
-## 🏃‍♂️ Execution Flow & Features
+## Execution Flow & Features
 
 The bootloader transitions through three distinct CPU modes:
 
-### 1️⃣ Stage 1: 16-bit Real Mode (`0x7C00`)
+### Stage 1: 16-bit Real Mode (`0x7C00`)
 * **Initializes CPU registers** and sets up a temporary system stack.
 * **Leverages BIOS Interrupt `INT 0x13`** to load an additional 5 sectors (Stage 2) from the boot drive into RAM address `0x7E00`.
 * **Enables the A20 Line** using the Fast A20 Gate method (port `0x92`) to break past the 1MB memory barrier.
 * **Loads a basic 32-bit Global Descriptor Table (GDT)** and toggles `CR0.PE` to switch into Protected Mode.
 
-### 2️⃣ Stage 2: 32-bit Protected Mode (`0x7E00`)
+### Stage 2: 32-bit Protected Mode (`0x7E00`)
 * **Clears the instruction pipeline** using a far jump and updates data segments.
 * **Prints a visual 'P'** directly to VGA Video Memory (`0xB8000`) to confirm a successful mode transition.
 * **Sets up 4-level Identity Paging** (PML4, PDPT, and a 2MB Huge Page) mapped at memory location `0x1000`.
 * **Sets the `EFER.LME` (Long Mode Enable) MSR** and enables Paging (`CR0.PG`).
 * **Loads the 64-bit GDT** and jumps into Long Mode.
 
-### 3️⃣ Stage 3: 64-bit Long Mode
+### Stage 3: 64-bit Long Mode
 * **Nullifies data segments** (as required by x86_64 architecture).
 * **Writes "OK" onto the screen** using a white text/green background attribute.
 * **Streams "OK\n" sequentially** to the first Serial COM port (`0x3F8`) for debugging.
@@ -29,7 +29,7 @@ The bootloader transitions through three distinct CPU modes:
 
 ---
 
-## 🗺️ Memory Map Layout
+## Memory Map Layout
 
 The bootloader configures and utilizes physical memory according to the following layout:
 
@@ -45,7 +45,7 @@ The bootloader configures and utilizes physical memory according to the followin
 
 ---
 
-## 🛠️ Prerequisites
+## Prerequisites
 
 To compile and emulate this bootloader, you will need an assembler (NASM) and an emulator (QEMU).
 
@@ -65,7 +65,7 @@ Download the binaries for [NASM](https://www.nasm.us/) and [QEMU](https://www.qe
 
 ---
 
-## ⚙️ Compilation & Running
+## Compilation & Running
 
 Use the repository `Makefile` to assemble the source and generate the raw boot binary.
 
@@ -92,13 +92,12 @@ Because the bootloader writes status output to the serial port (`0x3F8`), you ca
 ```bash
 qemu-system-x86_64 -drive format=raw,file=boot.bin -serial stdio
 ```
+# Screenshot
 
-> [!NOTE]
-> This project currently produces a raw binary file named `boot.bin`, not `boot.img`.
+<img width="722" height="465" alt="image" src="https://github.com/user-attachments/assets/a54ea576-52a2-4c79-8d27-0197521f4d63" />
 
----
 
-## 🔍 Code Architecture Highlights
+## Code Architecture Highlights
 
 * **Note on Paging:** The implementation implements Identity Paging for the lowest 2 Megabytes of system memory. It leverages CR4's Physical Address Extension (PAE) bit and constructs a 2MB Page frame directly inside the Page Directory (PD) entry by enabling the Huge Page bit (bit 7), bypassing the necessity of a fine-grained Level 1 Page Table (PT).
 * **The Magic Number:** The first sector relies strictly on the `0xAA55` word signature at offset 510 to trick the system BIOS into recognizing the drive as actively bootable code.
